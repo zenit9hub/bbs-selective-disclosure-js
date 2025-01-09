@@ -1,0 +1,4 @@
+dist/ 
+node_modules/
+.env
+status_n_diff.log
