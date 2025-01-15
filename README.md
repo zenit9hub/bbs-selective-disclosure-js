@@ -21,7 +21,7 @@ BBS+ signatures allow for the creation of digital signatures that can selectivel
 1. Clone the repository:
 
    ```bash
-   git clone git@github.com-personal:flitsky/bbs-selective-disclosure-js.git
+   git clone https://github.com/zenit9hub/bbs-selective-disclosure-js.git
    ```
 
 2. Navigate to the project directory:

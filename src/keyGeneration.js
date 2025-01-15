@@ -3,12 +3,13 @@ import {
   generateBls12381G2KeyPair,
   bls12381toBbs,
 } from "@mattrglobal/bbs-signatures";
+import crypto from "crypto";
 
 const KEY_LENGTH = 32;
 
 // Generate a BLS key pair
 export const generateBLSKeyPair = async () => {
-  const privateKey = crypto.getRandomValues(new Uint8Array(KEY_LENGTH));
+  const privateKey = crypto.randomBytes(KEY_LENGTH);
   const publicKey = getPublicKey(privateKey);
   return { privateKey, publicKey };
 };
