@@ -16,6 +16,7 @@ import {
   padMessage,
   createProof,
   verifyProof,
+  generateNonce,
 } from "../src/bbs-core.js";
 
 describe("Utility Functions", () => {
@@ -108,71 +109,52 @@ describe("bbs-core.js Tests", () => {
 });
 
 describe("BBS Selective Disclosure Tests", () => {
-  it("Reveals only the first message out of three", async () => {
-    const messageCount = 3;
-    const bbsKeyPair = await generateBBSKeyPair(messageCount);
+  it("Reveals the first and third claims out of three", async () => {
+    // 1. Define the number of claims
+    const claimCount = 3;
 
+    // 2. Generate BBS key pair
+    const bbsKeyPair = await generateBBSKeyPair(claimCount);
+    expect(bbsKeyPair.publicKey).to.be.instanceOf(Uint8Array);
+    expect(bbsKeyPair.secretKey).to.be.instanceOf(Uint8Array);
+
+    // 3. Construct claim array
     const claims = [
-      new TextEncoder().encode("Message A"),
-      new TextEncoder().encode("Message B"),
-      new TextEncoder().encode("Message C"),
+      new TextEncoder().encode("Claim A"),
+      new TextEncoder().encode("Claim B"),
+      new TextEncoder().encode("Claim C"),
     ];
+    expect(claims.length).to.equal(claimCount);
 
+    // 4. Generate BBS signature
     const signature = await signBBS(bbsKeyPair, claims);
     expect(signature).to.be.instanceOf(Uint8Array);
 
-    const revealedIndexes = [0];
-    const nonce = new Uint8Array([1, 2, 3]);
+    // 5. Set indices of claims to reveal
+    const revealedIndices = [0, 2];
 
+    // 6. Generate a secure nonce
+    const nonce = generateNonce(); // Default length of 32
+    expect(nonce.byteLength).to.be.gte(16);
+
+    // 7. Create proof for selective disclosure
     const proof = await createProof({
       signature,
       publicKey: bbsKeyPair.publicKey,
       messages: claims,
-      revealed: revealedIndexes,
+      revealed: revealedIndices,
       nonce,
     });
+    expect(proof).to.be.instanceOf(Object);
 
-    const revealedMessages = revealedIndexes.map((index) => claims[index]);
+    // 8. Extract only the revealed claims
+    const revealedClaims = revealedIndices.map((index) => claims[index]);
 
+    // 9. Verify the proof
     const proofResult = await verifyProof({
       proof,
       publicKey: bbsKeyPair.publicKey,
-      messages: revealedMessages,
-      nonce,
-    });
-    expect(proofResult.verified).to.be.true;
-  });
-
-  it("Reveals the first and third messages out of three", async () => {
-    const messageCount = 3;
-    const bbsKeyPair = await generateBBSKeyPair(messageCount);
-
-    const messages = [
-      new TextEncoder().encode("Message A"),
-      new TextEncoder().encode("Message B"),
-      new TextEncoder().encode("Message C"),
-    ];
-
-    const signature = await signBBS(bbsKeyPair, messages);
-    expect(signature).to.be.instanceOf(Uint8Array);
-
-    const revealed = [0, 2];
-    const nonce = new Uint8Array([1, 2, 3]);
-
-    const proof = await createProof({
-      signature,
-      publicKey: bbsKeyPair.publicKey,
-      messages,
-      revealed,
-      nonce,
-    });
-
-    const revealedMessages = revealed.map((index) => messages[index]);
-
-    const proofResult = await verifyProof({
-      proof,
-      publicKey: bbsKeyPair.publicKey,
-      messages: revealedMessages,
+      messages: revealedClaims,
       nonce,
     });
     expect(proofResult.verified).to.be.true;

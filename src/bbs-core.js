@@ -1,7 +1,7 @@
 // bbs-core.js
 import { generateBLSKeyPair, generateBBSKeyPair } from "./keyGeneration.js";
 import { signBLS, verifyBLS, signBBS, verifyBBS } from "./signing.js";
-import { bytesToHex, hexToBytes, padMessage } from "./utils.js";
+import { bytesToHex, hexToBytes, padMessage, generateNonce } from "./utils.js";
 import {
   createProof as bbsCreateProof,
   verifyProof as bbsVerifyProof,
@@ -45,4 +45,5 @@ export {
   bytesToHex,
   hexToBytes,
   padMessage,
+  generateNonce,
 };

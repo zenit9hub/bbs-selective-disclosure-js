@@ -21,3 +21,12 @@ export const padMessage = (message) => {
   paddedMessage.set(message);
   return paddedMessage;
 };
+
+export const generateNonce = (length = 32) => {
+  if (length < 16) {
+    throw new Error(
+      "Nonce length must be at least 16 bytes for security reasons."
+    );
+  }
+  return crypto.getRandomValues(new Uint8Array(length));
+};
