@@ -6,6 +6,7 @@
   "type": "module",
   "scripts": {
     "test": "mocha tests/**/*.test.js",
+    "test:export": "node scripts/exportStageReports.js",
     "gitlog": "git status > status_n_diff.log && git diff --cached >> status_n_diff.log"
   },
   "keywords": [],

@@ -1,4 +1,5 @@
 dist/ 
 node_modules/
+reports/
 .env
 status_n_diff.log
